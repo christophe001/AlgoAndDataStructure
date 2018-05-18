@@ -47,9 +47,15 @@ public class WordNet {
 			digraph = new Digraph(id2set.size());
 			while (Hypernyms.hasNextLine()) {
 				String[] hyp = Hypernyms.readLine().split(",");
-				int v = Integer.valueOf(hyp[0]);
-				int w = Integer.valueOf(hyp[1]);
-				digraph.addEdge(v, w);
+				int[] nums = new int[hyp.length];
+				for (int i = 0; i< nums.length; i++) {
+					nums[i] = Integer.valueOf(hyp[i]);
+				}
+				if (nums.length >= 2) {
+					for (int i = 1; i < nums.length; i++) {
+						digraph.addEdge(nums[0], nums[i]);
+					}
+				}
 			}
 			sca = new ShortestCommonAncestor(digraph);
 		}
