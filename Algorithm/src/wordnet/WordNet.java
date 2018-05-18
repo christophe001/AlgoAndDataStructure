@@ -98,7 +98,19 @@ public class WordNet {
 	}
 
 	// unit testing (required)
-	public static void main(String[] args) {}
+	public static void main(String[] args) {
+		WordNet wordNet = new WordNet(args[0], args[1]);
+		
+        StdOut.println(wordNet.isNoun("a"));
+        StdOut.println(wordNet.sca("a", "b"));
+        StdOut.println();
+        StdOut.println(wordNet.sca("b", "f"));
+        StdOut.println(wordNet.distance("b", "f"));
+
+        StdOut.println();
+        StdOut.println(wordNet.sca("c", "f"));
+        StdOut.println(wordNet.distance("c", "f"));
+	}
 	
 	
 }
