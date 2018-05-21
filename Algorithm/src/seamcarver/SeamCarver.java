@@ -64,6 +64,7 @@ public class SeamCarver {
 		if (y < 0 || y > pic.height() - 1)
 			throw new IllegalArgumentException("y coordindate out of range");
 	}
+	
 	// energy of pixel at column x and row y
 	public double energy(int x, int y) {
 		validateX(x);
@@ -93,7 +94,8 @@ public class SeamCarver {
 		transpose();
 		return seam;
 	}
-		
+	
+	// find smallest energy in prev line
 	private int minPrev(int i, int j) {
 		if (i == 0)
 			return distTo[i][j-1] < distTo[i+1][j-1] ? i : i + 1;
