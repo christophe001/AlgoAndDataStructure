@@ -4,12 +4,17 @@ import stdlib.Picture;
 
 import java.awt.Color;
 
+import datastructure.*;
 
 public class SeamCarver {
 	// create a seam carver object based on the given picture
 	private Picture pic;
 	
 	private double[][] energy;
+	
+	private int[][] prev;
+	
+	private double[][] distTo;
 	
 	public SeamCarver(Picture picture) {
 		pic = new Picture(picture);
@@ -32,9 +37,13 @@ public class SeamCarver {
 	   
 	private void calcEnergy() {
 		energy = new double[width()][height()];
+		prev = new int[width()][height()];
+		distTo = new double[width()][height()];
 		for (int i = 0; i < width(); i++) {
 			for (int j = 0; j < height(); j++) {
 				energy[i][j] = energy(i, j);
+				distTo[i][j] = Double.POSITIVE_INFINITY;
+				prev[i][j] = -1;
 			}
 		}
 	}
@@ -64,7 +73,7 @@ public class SeamCarver {
 		int yu = y > 0 ? y - 1 : height() - 1;
 		int yd = y < height() - 1 ? y + 1 : 0;
 		double diff =  colorDiffSquare(pic.get(xl, y), pic.get(xr, y)) 
-				+ colorDiffSquare(pic.get(x, yu), pic.get(xr, yd));
+				+ colorDiffSquare(pic.get(x, yu), pic.get(x, yd));
 		return Math.sqrt(diff);
 	}               
 	  
@@ -84,14 +93,53 @@ public class SeamCarver {
 		transpose();
 		return seam;
 	}
-	
-
+		
+	private int minPrev(int i, int j) {
+		if (i == 0)
+			return distTo[i][j-1] < distTo[i+1][j-1] ? i : i + 1;
+		else if (i == width() - 1)
+			return distTo[i-1][j-1] < distTo[i][j-1] ? i-1 : i;
+		else {
+			double m = distTo[i-1][j-1];
+			int k = i-1;
+			if (distTo[i][j-1] < m) {
+				m = distTo[i][j-1];
+				k = i;
+			}
+			if (distTo[i+1][j-1] < m) {
+				m = distTo[i+1][j-1];
+				k = i+1;
+			}
+			return k;
+		}
+	}
 	
 	// sequence of indices for vertical seam
 	public int[] findVerticalSeam() {
 		int[] seam = new int[height()];
 		calcEnergy();
-
+		for (int i = 0; i < width(); i++) {
+			distTo[i][0] = energy[i][0];
+		}
+		for (int j = 1; j < height(); j++) {
+			for (int i = 0; i < width(); i++) {
+				prev[i][j] = minPrev(i, j);
+				distTo[i][j] = energy[i][j] + distTo[prev[i][j]][j - 1];	
+			}
+		}
+		double minVal = Double.POSITIVE_INFINITY;
+		int emin = -1;
+		for (int ix = 0; ix < width(); ix++) {
+			if (distTo[ix][height()-1] < minVal) {
+				minVal = distTo[ix][height()-1];
+				emin = ix;
+			}
+		}
+		for (int h = height() - 1; h >= 0; h--) {
+			seam[h] = emin;
+			emin = prev[emin][h];
+		}
+		return seam;
 	}                
 	   
 	// remove horizontal seam from current picture
