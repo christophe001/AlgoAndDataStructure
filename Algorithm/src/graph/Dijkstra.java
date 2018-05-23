@@ -4,7 +4,7 @@ import datastructure.*;
 
 import stdlib.*;
 
-public class Dijkstra {
+public class Dijkstra implements SP {
 	private double[] distTo;
 	private DirectedEdge[] edgeTo;
 	private int V;
